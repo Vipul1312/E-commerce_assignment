@@ -4,8 +4,11 @@ const { getDashboard, getAllUsers, deleteUser } = require('../controllers/adminC
 const { protect, adminOnly } = require('../middleware/auth');
 const { seedDatabase } = require('../utils/seed');
 
-router.use(protect, adminOnly);
+// Seed — bina auth ke
 router.get('/seed', seedDatabase);
+
+// Baaki protected
+router.use(protect, adminOnly);
 router.get('/dashboard', getDashboard);
 router.get('/users', getAllUsers);
 router.delete('/users/:id', deleteUser);
