@@ -1,6 +1,5 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const connectDB = require('../config/db');
@@ -21,33 +20,32 @@ const products = [
 ];
 
 const seedDB = async () => {
-  await connectDB();
-
-  // Clear existing data
   await Product.deleteMany();
   await User.deleteMany({ role: 'admin' });
-
-  // Insert products
   await Product.insertMany(products);
-  console.log(`✅ ${products.length} products inserted`);
-
-  // Create admin user
   await User.create({
     name: 'Admin',
     email: 'admin@luxe.com',
     password: 'Admin@123',
     role: 'admin',
   });
-  console.log('✅ Admin user created: admin@luxe.com / Admin@123');
-
   console.log('🌱 Database seeded successfully!');
-  process.exit(0);
 };
 
-seedDB().catch(err => { console.error(err); process.exit(1); });
+// CLI se run karne ke liye
+if (require.main === module) {
+  connectDB().then(async () => {
+    await seedDB();
+    process.exit(0);
+  }).catch(err => { console.error(err); process.exit(1); });
+}
 
+// Route se call karne ke liye
 exports.seedDatabase = async (req, res) => {
-  await seedDB();
-  res.json({ success: true, message: 'Database seeded!' });
+  try {
+    await seedDB();
+    res.json({ success: true, message: '🌱 Database seeded! Admin: admin@luxe.com / Admin@123' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
-```
