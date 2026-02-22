@@ -45,3 +45,9 @@ const seedDB = async () => {
 };
 
 seedDB().catch(err => { console.error(err); process.exit(1); });
+
+exports.seedDatabase = async (req, res) => {
+  await seedDB();
+  res.json({ success: true, message: 'Database seeded!' });
+};
+```
