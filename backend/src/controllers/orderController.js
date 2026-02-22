@@ -1,16 +1,24 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
-const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+let razorpay = null;
+
+// Initialize Razorpay only if credentials are available
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  const Razorpay = require('razorpay');
+  razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+}
 
 // @POST /api/orders/razorpay-order — create Razorpay order
 exports.createRazorpayOrder = async (req, res, next) => {
   try {
+    if (!razorpay) {
+      return res.status(503).json({ success: false, message: 'Razorpay not configured' });
+    }
     const { amount } = req.body; // amount in INR
     const options = {
       amount: Math.round(amount * 100), // paise mein
@@ -33,6 +41,9 @@ exports.placeOrder = async (req, res, next) => {
 
     // Razorpay signature verify karo (agar razorpay payment hai)
     if (paymentMethod === 'razorpay') {
+      if (!razorpay) {
+        return res.status(503).json({ success: false, message: 'Razorpay not configured' });
+      }
       const sign = razorpayOrderId + '|' + razorpayPaymentId;
       const expected = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
