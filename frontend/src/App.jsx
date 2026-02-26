@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useApp } from './context/AppContext';
+import ChatBot from './components/ChatBot';
 import { Notification, Navbar, Footer, CartDrawer, AuthModal, ProductModal } from './components';
 import { HomePage, ShopPage, CheckoutPage, OrdersPage, WishlistPage, LookbookPage, ProfilePage, AdminPage } from './pages';
 import './styles/index.css';
@@ -38,6 +39,7 @@ export default function App() {
       </main>
 
       {page !== 'admin' && <Footer />}
+      <ChatBot />
     </div>
   );
 }

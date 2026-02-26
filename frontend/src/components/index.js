@@ -14,3 +14,5 @@ export { default as CartDrawer }   from './cart/CartDrawer';
 
 // Auth
 export { default as AuthModal }    from './auth/AuthModal';
+
+export { default as ChatBot } from './ChatBot';
